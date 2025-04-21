@@ -18,9 +18,9 @@ services:
       - postgres
     environment:
       DATABASE_URL: ${DATABASE_URL}
-      PORT: ${FLOW_SERVICE_PORT_INTERNAL}
+      PORT: ${FLOW_SERVICE_PORT}
     ports:
-      - "${FLOW_SERVICE_PORT_EXTERNAL}:${FLOW_SERVICE_PORT_INTERNAL}"
+      - "${FLOW_SERVICE_PORT}:${FLOW_SERVICE_PORT}"
     networks:
       - tg-network
 
@@ -31,9 +31,9 @@ services:
     depends_on:
       - flow-service
     environment:
-      PORT: ${CODEGEN_SERVICE_PORT_INTERNAL}
+      PORT: ${CODEGEN_SERVICE_PORT}
     ports:
-      - "${CODEGEN_SERVICE_PORT_EXTERNAL}:${CODEGEN_SERVICE_PORT_INTERNAL}"
+      - "${CODEGEN_SERVICE_PORT}:${CODEGEN_SERVICE_PORT}"
     networks:
       - tg-network
 
@@ -43,15 +43,27 @@ services:
       dockerfile: gateway/Dockerfile
     depends_on:
       - flow-service
-      - codegen-service
     environment:
       FLOW_HOST: ${FLOW_HOST}
-      FLOW_PORT: ${FLOW_PORT}
-      CODEGEN_HOST: ${CODEGEN_HOST}
-      CODEGEN_PORT: ${CODEGEN_PORT}
-      GATEWAY_PORT: ${GATEWAY_PORT_INTERNAL}
+      FLOW_PORT: ${FLOW_SERVICE_PORT}
+      GATEWAY_PORT: ${GATEWAY_PORT}
     ports:
-      - "${GATEWAY_PORT_EXTERNAL}:${GATEWAY_PORT_INTERNAL}"
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+    networks:
+      - tg-network
+
+  ui:
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    depends_on:
+      - gateway
+      - flow-service
+    environment:
+      REACT_APP_GATEWAY_HOST: ${REACT_APP_GATEWAY_HOST}
+      REACT_APP_GATEWAY_PORT: ${REACT_APP_GATEWAY_PORT}
+    ports:
+      - "${REACT_APP_UI_PORT}:${REACT_APP_UI_PORT}"
     networks:
       - tg-network
 

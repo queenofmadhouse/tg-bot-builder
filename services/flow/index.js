@@ -3,7 +3,7 @@ const { PrismaClient } = require('./generated/prisma_client');
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const prisma = new PrismaClient();
 
 // Create Flow
@@ -12,8 +12,8 @@ app.post('/flows', async (req, res) => {
 });
 
 // Read all Flows
-app.get('/flows', async (req, res) => {
-
+app.get('/flows', (req, res) => {
+    res.json({ message: 'Hello World from Flow Service!' });
 });
 
 // Read one Flow
